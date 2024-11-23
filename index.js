@@ -103,8 +103,6 @@ function getLearnerData(course, ag, submissions) {
     throw new Error("Course ID does not match the assignment group");
   }
 
-  
-
   // Calculating the score for an assignment
   function calculateScore(submission, assignment) {
     // Checking to make sure that the points possible for assignment is not zero
@@ -202,11 +200,9 @@ function getLearnerData(course, ag, submissions) {
     });
   });
 
-
   return result;
   
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
-
 console.log(result);
