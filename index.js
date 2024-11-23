@@ -113,6 +113,12 @@ function getLearnerData(course, ag, submissions) {
         );
       }
 
+      if (submission.score > assignment.points_possible) {
+        throw new Error(
+          "score cannot be more than points possible"
+        );
+      }
+
       let score = submission.score / assignment.points_possible;
 
       // Checking if the submission is late and take 10% off if assignment is late
