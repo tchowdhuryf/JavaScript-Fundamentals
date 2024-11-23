@@ -103,6 +103,8 @@ function getLearnerData(course, ag, submissions) {
     throw new Error("Course ID does not match the assignment group");
   }
 
+  const learnerResults = {}; // object variable to store final results
+
   // Calculating the score for an assignment
   function calculateScore(submission, assignment) {
     // Checking to make sure that the points possible for assignment is not zero
@@ -135,20 +137,61 @@ function getLearnerData(course, ag, submissions) {
     }
   }
 
-  // Find the assignment
-  let assignment;
-  for (let i = 0; i < ag.assignments.length; i++) {
-    if (ag.assignments[i].id === assignment_id) {
-      assignment = ag.assignments[i];
-      break;
-    }
+  // Checking if an assignment is due
+  function isAssignmentDue(dueDate) {
+    const now = new Date();
+    return new Date(dueDate) <= now;
   }
 
+  submissions.forEach((submissionData) => {
+    const learner_id = submissionData.learner_id;
+    const assignment_id = submissionData.assignment_id;
+    const submission = submissionData.submission;
+
+    // Find the assignment
+    let assignment;
+    for (let i = 0; i < ag.assignments.length; i++) {
+      if (ag.assignments[i].id === assignment_id) {
+        assignment = ag.assignments[i];
+        break;
+      }
+    }
+
+    // Skipping assignment if it is not due
+    // if assignment is found and is due... 
+    if (assignment && isAssignmentDue(assignment.due_at)) {
+      // Initializing objects to store results
+      if (!learnerResults[learner_id]) {
+        learnerResults[learner_id] = {
+          id: learner_id,
+          avg: 0,
+          assignments: {},
+          totalWeight: 0,
+          totalPoints: 0,
+        };
+      }
+
+      // Calculating score for the assignment
+      const scorePercentage = calculateScore(submission, assignment);
+
+      // Storing the score for the assignment
+      learnerResults[learner_id].assignments[assignment_id] = parseFloat(
+        scorePercentage.toFixed(3)
+      );
+
+      // Adding weighted points to total
+      learnerResults[learner_id].totalWeight +=
+        (assignment.points_possible * ag.group_weight) / 100;
+      learnerResults[learner_id].totalPoints +=
+        (scorePercentage * assignment.points_possible * ag.group_weight) / 100;
+    }
+  });
 
 
   return result;
   
 }
+
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
 console.log(result);
