@@ -120,8 +120,14 @@ function getLearnerData(course, ag, submissions) {
         score -= 0.1;
       }
 
-      // Checking if the score is between 0 and 1. within 100%
-      return Math.max(0, Math.min(score, 1)); // Clamping to range [0, 1]
+      // Checking if the score is between 0 and 1. to check if it is within 100%
+      if (score < 0) {
+        return 0;
+      } else if (score > 1) {
+        return 1;
+      } else {
+        return score;
+      }
 
     } catch (error) {
       console.error(error); // If invalid score catch error return 0
@@ -138,7 +144,7 @@ function getLearnerData(course, ag, submissions) {
     }
   }
 
-  
+
 
   return result;
   
