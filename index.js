@@ -103,6 +103,10 @@ function getLearnerData(course, ag, submissions) {
     throw new Error("Course ID does not match the assignment group");
   }
 
+  if (course.id !== ag.course_id) {
+    throw new Error("Course ID does not match the assignment group");
+  }
+
   // Calculating the score for an assignment
   function calculateScore(submission, assignment) {
     // Checking to make sure that the points possible for assignment is not zero
@@ -115,7 +119,13 @@ function getLearnerData(course, ag, submissions) {
 
       if (submission.score > assignment.points_possible) {
         throw new Error(
-          "score cannot be more than points possible"
+          "Score cannot be more than points possible"
+        );
+      }
+
+      if (typeof submission.score !== 'number') {
+        throw new Error(
+          "Not a valid score"
         );
       }
 
