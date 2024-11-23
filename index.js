@@ -103,7 +103,7 @@ function getLearnerData(course, ag, submissions) {
     throw new Error("Course ID does not match the assignment group");
   }
 
-  const learnerResults = {}; // object variable to store final results
+  
 
   // Calculating the score for an assignment
   function calculateScore(submission, assignment) {
@@ -143,12 +143,14 @@ function getLearnerData(course, ag, submissions) {
     return new Date(dueDate) <= now;
   }
 
+  const learnerResults = {}; // object variable to store data to calculate scores and avg
+
   submissions.forEach((submissionData) => {
     const learner_id = submissionData.learner_id;
     const assignment_id = submissionData.assignment_id;
     const submission = submissionData.submission;
 
-    // Find the assignment
+    // Finding the assignment
     let assignment;
     for (let i = 0; i < ag.assignments.length; i++) {
       if (ag.assignments[i].id === assignment_id) {
@@ -185,6 +187,19 @@ function getLearnerData(course, ag, submissions) {
       learnerResults[learner_id].totalPoints +=
         (scorePercentage * assignment.points_possible * ag.group_weight) / 100;
     }
+  });
+
+  // Calculating average for each learner
+  const result = [];
+  Object.values(learnerResults).forEach((learner) => {
+    const avg = parseFloat(
+      (learner.totalPoints / learner.totalWeight).toFixed(3)
+    );
+    result.push({
+      id: learner.id,
+      avg: avg,
+      ...learner.assignments,
+    });
   });
 
 
